@@ -1,19 +1,49 @@
 package com.example.demo.Model;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Document(collection = "groups") // Maps to the "groups" collection in MongoDB
 public class Group {
-    public String id;
-    String topicName;
-    String creatorId;
-    List<Language> languages;
-    Level level;
-    List<String> userIds;
-    Integer limit;
 
-    public Group(String id, String topicName, String creatorId, List<Language> languages, Level level,
-            List<String> userIds, Integer limit) {
-        this.id = id;
+    @Id
+    private String id;
+
+    @Field("topic_name")
+    private String topicName;
+
+    @Field("creator_id")
+    private String creatorId;
+
+    private List<String> languages;
+
+    private String level;
+
+    @Field("user_ids")
+    private List<String> userIds;
+
+    private Integer limit;
+
+    @CreatedDate
+    @Field("created_at")
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Field("updated_at")
+    private LocalDateTime updatedAt;
+
+    // Default constructor
+    public Group() {
+    }
+
+    // Constructor excluding auditing fields
+    public Group(String topicName, String creatorId, List<String> languages, String level, List<String> userIds, Integer limit) {
         this.topicName = topicName;
         this.creatorId = creatorId;
         this.languages = languages;
@@ -22,6 +52,7 @@ public class Group {
         this.limit = limit;
     }
 
+    // Getters and setters
     public String getId() {
         return id;
     }
@@ -46,19 +77,19 @@ public class Group {
         this.creatorId = creatorId;
     }
 
-    public List<Language> getLanguages() {
+    public List<String> getLanguages() {
         return languages;
     }
 
-    public void setLanguages(List<Language> languages) {
+    public void setLanguages(List<String> languages) {
         this.languages = languages;
     }
 
-    public Level getLevel() {
+    public String getLevel() {
         return level;
     }
 
-    public void setLevel(Level level) {
+    public void setLevel(String level) {
         this.level = level;
     }
 
@@ -76,5 +107,13 @@ public class Group {
 
     public void setLimit(Integer limit) {
         this.limit = limit;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }

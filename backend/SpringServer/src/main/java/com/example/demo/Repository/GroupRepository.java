@@ -26,7 +26,7 @@ public class GroupRepository {
     
     public Group getGroupByID(String id) {
         for(Group group: groups) {
-            if(group.id.equals(id)) {
+            if(group.getId().equals(id)) {
                 return group;
             }
         }
