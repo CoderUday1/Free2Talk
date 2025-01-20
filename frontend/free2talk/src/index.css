@@ -1,0 +1,50 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: url('../public/tiles.jpg');
+  background-size: 10px 5px; /* Resize the image to 200x200 pixels */
+  background-repeat: repeat; /* Repeat the image to cover the entire screen */
+  background-position: top left; /* Optional: Position the starting point */
+  padding-left:200px;
+  padding-right:200px;
+  color: antiquewhite !important;
+  background-color: rgb(56, 56, 56) !important;
+}
+
+@media (max-width: 1000px) {
+  body {
+    padding-left: 150px;
+    padding-right: 150px;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    padding-left: 100px;
+    padding-right: 100px;
+  }
+}
+
+@media (max-width: 750px) {
+  body {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
+
+@media (max-width: 500px) {
+  body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

@@ -1,0 +1,108 @@
+.meet-page {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 60px;
+    height: 100%;
+    background-color: #333;
+    color: white;
+    transition: width 0.3s;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar.open {
+    width:350px;
+}
+
+.sidebar-content {
+    padding: 10px;
+    width: 100%;
+}
+
+.sidebar-buttons {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-buttons.horizontal {
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.sidebar-buttons li {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.sidebar-buttons.horizontal li {
+    width: auto;
+}
+
+.sidebar-buttons li button {
+    background: none;
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+}
+
+.sidebar-buttons.horizontal li button {
+    width: auto;
+}
+
+.sidebar-buttons li button:hover {
+    background-color: #555;
+}
+
+.sidebar-buttons li span {
+    margin-left: 10px;
+}
+
+.chat-content {
+    margin-top: 20px;
+}
+
+.chat-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.chat-content .messages {
+    background-color: #444;
+    padding: 10px;
+    border-radius: 4px;
+    height: 75vh;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.content {
+    padding: 20px;
+    flex-grow: 1;
+    transition: margin-right 0.3s;
+    margin-right: 60px;
+}
+
+.sidebar.open + .content {
+    margin-right: 200px;
+}
