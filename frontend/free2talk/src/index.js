@@ -7,11 +7,18 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css'
 import Home from './components/home';
 import MeetPage from './components/meet';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <MeetPage />
+    <Router>
+      <Routes>
+        <Route path="/meet/*" element={<MeetPage />} />
+        <Route path="/" element={<Home />} />
+        {/* <Route path="*" element={<NotFound />} /> */}
+      </Routes>
+    </Router>
   </React.StrictMode>
 );
 
