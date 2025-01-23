@@ -1,13 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import '../styles/createGroup.css'
+import { useSocket } from '../providers/socket';
+import { useNavigate } from 'react-router-dom';
 
-class CreateGroup extends Component {
-    state = {
-        modalIsOpen: false
-    };
+function CreateGroup(props) {
 
-    customStyles = {
+    const customStyles = {
         content: {
             backgroundColor: 'white',
             color: 'black',
@@ -23,19 +22,44 @@ class CreateGroup extends Component {
         }
     };
     
-    render() {
+
+        const socket = useSocket();
+        const [email, setEmail] = useState('');
+        const [roomId, setRoomId] = useState(0);
+        const navigate = useNavigate();
+
+        const handleRoomJoined = ({ roomId }) => {
+            console.log('Room Joined', roomId);
+            navigate('/meet/' + roomId);
+        };
+
+        useEffect(() => {
+            socket.on('joined-room', handleRoomJoined);
+
+            return () => {
+                socket.off('joined-room', handleRoomJoined);
+            }
+        }, [socket]);
+
+
+
+        const handleJoinRoom = (event) => {
+            event.preventDefault();
+            socket.emit('join-room', roomId, email);
+        };
+
         return (
             <div className='modal'>
                 <Modal
-                    isOpen={this.props.modalIsOpen}
-                    onRequestClose={this.props.closeModal}
+                    isOpen={props.modalIsOpen}
+                    onRequestClose={props.closeModal}
                     contentLabel="Create Group"
-                    style={this.customStyles}
+                    style={customStyles}
                 >
                     <h2>Create Group</h2>
                     <form>
                         <label htmlFor="topic">Topic:</label>
-                        <input type='text' name='topic' placeholder='Any topic' />
+                        <input type='text' name='topic' onChange={e=>setEmail(e.target.value)} placeholder='Any topic' />
 
                         <label htmlFor="maxPeople">Maximum People:</label>
                         <select name="maxPeople">
@@ -46,7 +70,7 @@ class CreateGroup extends Component {
                         </select>
                         
                         <label htmlFor="languages">Language:</label>
-                        <select name="languages">
+                        <select name="languages" onChange={e=>setRoomId(e.target.value)}>
                             <option value="english">English</option>
                             <option value="spanish">Spanish</option>
                             <option value="french">French</option>
@@ -60,13 +84,12 @@ class CreateGroup extends Component {
                             <option value="INTERMEDIATE">Intermediate</option>
                             <option value="ADVANCED">Advanced</option>
                         </select>
-                        <button onClick={this.props.closeModal} type="button">Cancel</button>
-                        <button type="submit">Create Group</button>
+                        <button onClick={props.closeModal} type="button">Cancel</button>
+                        <button type="submit" onClick={(e)=>{handleJoinRoom(e)}}>Create Group</button>
                     </form>
                 </Modal>
             </div>
         );
-    }
 }
 
 export default CreateGroup;

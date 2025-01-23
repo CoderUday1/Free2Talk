@@ -1,108 +1,86 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSocket } from '../providers/socket';
-import { useEffect } from 'react';
 import { usePeer } from '../providers/Peer';
 import ReactPlayer from 'react-player';
 
 const RoomPage = () => {
     const socket = useSocket();
-    console.log("soketid",socket.id)
-    const {peer, createOffer, createAnswer, setRemoteAnswer, sendStream, remoteStream} = usePeer();
+    const { peer, createOffer, createAnswer, setRemoteAnswer, sendStream, remoteStream } = usePeer();
     const [myStream, setMyStream] = useState(null);
     const [remoteEmailId, setRemoteEmailId] = useState(null);
 
+    useEffect(() => {
+        const getMediaStream = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                setMyStream(stream);
+                sendStream(stream);
+            } catch (error) {
+                console.error('Error accessing media devices.', error);
+            }
+        };
+
+        getMediaStream();
+    }, [sendStream]);
+
     const handleNewUserJoined = useCallback(
         async (userId) => {
-        console.log("New user joined room ", userId);
-        const offer = await createOffer();
-        console.log("userId.....",userId);
-        setRemoteEmailId(userId);
-        socket.emit('send-sdp', {userId, sdp:offer});
-    }, [createOffer, socket, setRemoteEmailId]);
+            console.log("New user joined room ", userId);
+            const offer = await createOffer();
+            setRemoteEmailId(userId);
+            socket.emit('send-sdp', userId, offer);
+        },
+        [createOffer, socket]
+    );
 
-    const handleIncomingCall = useCallback( async (data) => {
-        console.log("receive-sdp",data)
-        let {from, sdp} = data;
-        peer.setRemoteDescription(sdp);
+    const handleIncomingCall = useCallback(
+        async (data) => {
+            const { from, sdp } = data;
+            console.log("receive-sdp", sdp);
+            try {
+                await peer.setRemoteDescription(new RTCSessionDescription(sdp));
+                const answer = await createAnswer(sdp);
+                console.log('Created answer:', answer);
+                socket.emit('accept-sdp', { userId: from, sdp: answer });
+            } catch (error) {
+                console.error('Error handling incoming call:', error);
+            }
+        },
+        [peer, createAnswer, socket]
+    );
 
-        const ans = await createAnswer(sdp);
-        console.log(ans)
-        socket.emit('accept-sdp',{userId: from, ans});
-
-    },[peer, createAnswer, socket]);
-
-    const handlecomingCall = useCallback( async (data) => {
-        console.log("receive-sdp----------",data)
-    })
-
-    const handleCallAccepted = useCallback( async (data) => {
-        console.log("call accepted", data);
-        const { ans } = data;
-        console.log("call accepted", ans);
-
-        await setRemoteAnswer(ans);
-        console.log("Call got accepted");
-    },[setRemoteAnswer]);
-
-    const getUserMediaStream = useCallback(async () => {
-        try{
-        // const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-        const stream = null;
-        setMyStream(stream);
-        }catch(error) {
-            console.log(error)
-        }
-
-    }, [sendStream, setMyStream]);
+    const handleCallAccepted = useCallback(
+        async (data) => {
+            const { sdp } = data;
+            console.log("accept-sdp", sdp);
+            try {
+                await peer.setRemoteDescription(new RTCSessionDescription(sdp));
+            } catch (error) {
+                console.error('Error handling call accepted:', error);
+            }
+        },
+        [peer]
+    );
 
     useEffect(() => {
-        socket.on('user-connected', handleNewUserJoined)
-        socket.on('receive-sdp', handleIncomingCall)
-        socket.on('receive-sdplu', handlecomingCall)
-
-        socket.on('receive-accept-sdp', handleCallAccepted)
-        socket.on('receive-message', (message) => {
-            console.log("HHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEELLLLLOooooo")
-        })
+        socket.on('user-connected', handleNewUserJoined);
+        socket.on('receive-sdp', handleIncomingCall);
+        socket.on('accept-sdp', handleCallAccepted);
 
         return () => {
-            socket.off('user-connected', handleNewUserJoined)
-            socket.off('receive-sdp', handleIncomingCall)
-            socket.off('receive-accept-sdp', handleCallAccepted)
-        }
-    }, []);
-
-    const handleNegosiation = useCallback(() => {
-        const localOffer = peer.localDescription;
-        socket.emit('send-sdp', {userId: remoteEmailId, sdp: localOffer});
-    })
-
-    useEffect(() => {
-        peer.addEventListener('negotiationneeded', handleNegosiation);
-        
-        return () => {
-            peer.removeEventListener('negotiationneeded', handleNegosiation);
-        }
-    }, [])  
-
-    useEffect(()=>{
-        getUserMediaStream();
-    })
+            socket.off('user-connected', handleNewUserJoined);
+            socket.off('receive-sdp', handleIncomingCall);
+            socket.off('accept-sdp', handleCallAccepted);
+        };
+    }, [socket, handleNewUserJoined, handleIncomingCall, handleCallAccepted]);
 
     return (
-        <div className="room-page-continer">
+        <div>
             <h1>Room Page</h1>
-            <p>You are connected to {remoteEmailId}</p>
-            <button onClick={(e) => sendStream(myStream)}> Send My video </button>
-            <ReactPlayer url={myStream} playing={true} controls={true} />
-            <ReactPlayer url={remoteStream} playing={true} controls={true} />
-
+            {myStream && <ReactPlayer url={myStream} playing muted />}
+            {remoteStream && <ReactPlayer url={remoteStream} playing />}
         </div>
-    )
-
-
-    
-
-}
+    );
+};
 
 export default RoomPage;

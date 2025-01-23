@@ -8,17 +8,22 @@ import 'font-awesome/css/font-awesome.css'
 import Home from './components/home';
 import MeetPage from './components/meet';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { SocketProvider } from './providers/socket';
+import { PeerProvider } from './providers/Peer';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/meet/*" element={<MeetPage />} />
-        <Route path="/" element={<Home />} />
-        {/* <Route path="*" element={<NotFound />} /> */}
-      </Routes>
-    </Router>
+    <SocketProvider>
+      <PeerProvider>
+        <Router>
+          <Routes>
+              <Route path="/meet/:id" element={<MeetPage />} />
+              <Route path="/" element={<Home />} />
+          </Routes>
+        </Router>
+      </PeerProvider>
+    </SocketProvider>
   </React.StrictMode>
 );
 
