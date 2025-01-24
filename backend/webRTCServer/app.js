@@ -7,7 +7,7 @@ const server = http.createServer(app);
 
 const io = require('socket.io')(server, {
     cors: {
-        origin: '*', // or specify the allowed origin
+        origin: '*',
         methods: ['GET', 'POST'],
         allowedHeaders: ['Content-Type', 'Authorization']
     }
@@ -51,26 +51,7 @@ io.on('connection', (socket) => {
         const fromId = socketToEmailMapping.get(socket.id);
         const socketId = emailToSocketMapping.get(userId);
         console.log(fromId,socketId, socket.id ,"From Id")
-        // socket.to(socketId).emit('user-connected', {from: fromId, sdp});
-        // for(let i=0;i<100;i++){
-        // socket.to(socketId).emit('receive-accept-sdp', {from: fromId, sdp,ans:"123"});
-        // socket.to(socketId).emit('user-connected', {from: fromId, sdp,ans:"123"});
-        // socket.to(socketId).emit('receive-sdplu', {from: fromId, sdp,ans:"123"});
         socket.to(socketId).emit('receive-sdp', {from: fromId, sdp,ans:"123"});
-
-        // socket.to(socket.id).emit('receive-accept-sdp', {from: fromId, sdp,ans:"123"});
-        // socket.to(socket.id).emit('user-connected', {from: fromId, sdp,ans:"123"});
-        // socket.to(socket.id).emit('receive-sdplu', {from: fromId, sdp,ans:"123"});
-        // socket.to(socket.id).emit('receive-sdp', {from: fromId, sdp,ans:"123"});
-
-        // }
-
-        // socket.to(socket.id).emit('receive-sdp', {from: fromId, sdp,ans:"123"});
-        // socket.to(socketId).emit('receive-accept-sdp', {from: fromId, sdp,ans:"123"});
-        // socket.to(socket.id).emit('receive-accept-sdp', {from: fromId, sdp,ans:"123"});
-
-        // socket.broadcast.to(0).emit('user-connected', {from: fromId, sdp});
-
     })
 
     socket.on('accept-sdp', data => {
