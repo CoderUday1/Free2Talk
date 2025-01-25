@@ -27,8 +27,8 @@ const RoomPage = () => {
         async (userId) => {
             console.log("New user joined room ", userId);
             const offer = await createOffer();
-            setRemoteEmailId(userId);
             socket.emit('send-sdp', userId, offer);
+            setRemoteEmailId(userId);
         },
         [createOffer, socket]
     );
@@ -42,6 +42,7 @@ const RoomPage = () => {
                 const answer = await createAnswer(sdp);
                 console.log('Created answer:', answer);
                 socket.emit('accept-sdp', { userId: from, sdp: answer });
+                setRemoteEmailId(from);
             } catch (error) {
                 console.error('Error handling incoming call:', error);
             }
@@ -62,6 +63,12 @@ const RoomPage = () => {
         [peer]
     );
 
+    const handleNegosiation = useCallback(async () => {
+        console.log("OOPS! NEGO, needed");
+        const localOffer = await peer.createOffer();
+        socket.emit('send-sdp', remoteEmailId, localOffer);
+    }   ,[])
+
     useEffect(() => {
         socket.on('user-connected', handleNewUserJoined);
         socket.on('receive-sdp', handleIncomingCall);
@@ -74,9 +81,17 @@ const RoomPage = () => {
         };
     }, [socket, handleNewUserJoined, handleIncomingCall, handleCallAccepted]);
 
+    useEffect(() => {
+        peer.addEventListener('negotiationneeded', handleNegosiation);
+        return () => {
+            peer.removeEventListener('negotiationneeded', handleNegosiation);
+        }
+    })
+
     return (
         <div>
             <h1>Room Page</h1>
+            <h4>You are connected to {remoteEmailId}</h4>
             {myStream && <ReactPlayer url={myStream} playing muted />}
             {remoteStream && <ReactPlayer url={remoteStream} playing />}
         </div>

@@ -12,10 +12,28 @@ export const PeerProvider = (props) => {
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun.linea7.net:3478' },
                 { urls: 'stun:stun.linphone.org:3478' },
-                { urls: 'stun:stun.liveo.fr:3478' }
+                { urls: 'stun:stun.liveo.fr:3478' },
+                {
+                    urls:'turn:relay1.expressturn.com:3378',
+                    username:'efU968JLQDI8WHIE8J',
+                    credential:'VISGCgjmkybDk0Co'
+                }
+                // {
+                //     urls:'turn:turn.cloudflare.com:3478',
+                //     "username":"2b325fc0b121837cda3ea64b30c7e87dcf2b3453f249df515dc9543dd29192c2a1b360b1e15898c0c4649dc5e74572279e49318e3e99fd8bf840f64f86fa527c",
+                // "credential":"aba9b169546eb6dcc7bfb1cdf34544cf95b5161d602e3b5fa7c8342b2e9802fb"}
             ]
         };
-        return new RTCPeerConnection(configuration);
+        const pc = new RTCPeerConnection(configuration);
+
+        pc.ontrack = (event) => {
+            console.log('Track event:===================================================', event);
+            const [stream] = event.streams;
+            setRemoteStream(stream);
+        };
+
+        return pc;
+
     }, []);
 
     const createOffer = async () => {
