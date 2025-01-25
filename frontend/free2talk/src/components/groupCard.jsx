@@ -25,9 +25,11 @@ class GroupCard extends Component {
         return (
             <React.Fragment>
                 <span className="group-card" style={this.styles}>
-                    <h1 >Group Name</h1>
+                    <h1 >{this.props.group.topicName}</h1>
                     <ul>
-                        {this.state.members.map(userId => <li key={userId}>{userId}</li>)}
+                        <li>Languages : {this.props.group.languages}</li>
+                        <li>Leve : {this.props.group.level}</li>
+                        <li>Limit : {this.props.group.limit}</li>
                     </ul>
                     <p>{this.formatCount()}</p>
                     <button onClick={this.handleJoin} className='btn btn-secondary btn-sm'>Join Group</button>

@@ -57,7 +57,7 @@ function CreateGroup(props) {
                     style={customStyles}
                 >
                     <h2>Create Group</h2>
-                    <form>
+                    <form className='create-group-form' action="http://localhost:8080/group" method="post">
                         <label htmlFor="topic">Topic:</label>
                         <input type='text' name='topic' onChange={e=>setEmail(e.target.value)} placeholder='Any topic' />
 
