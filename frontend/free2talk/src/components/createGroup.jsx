@@ -25,7 +25,14 @@ function CreateGroup(props) {
 
         const socket = useSocket();
         const [email, setEmail] = useState('');
-        const [roomId, setRoomId] = useState(0);
+        const [creatorId, setCreatorId] = useState('');
+        const [topicName, setTopicName] = useState('Any topic');
+        const [language, setLanguage] = useState('ENGLISH');
+
+        const [level, setLevel] = useState('ANY_LEVEL');
+        const [limit, setLimit] = useState(2);
+
+
         const navigate = useNavigate();
 
         const handleRoomJoined = ({ roomId }) => {
@@ -44,8 +51,43 @@ function CreateGroup(props) {
 
 
         const handleJoinRoom = (event) => {
+            
             event.preventDefault();
-            socket.emit('join-room', roomId, email);
+            console.log(email)
+            console.log(topicName)
+            console.log(creatorId)
+            console.log(language)
+            console.log(level)
+            console.log(limit)
+
+            fetch('http://localhost:8080/group', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    creatorId: creatorId,
+                    topicName: topicName,
+                    languages: [language],
+                    level: level,
+                    limit: limit
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                if (data.roomId) {
+                    socket.emit('join-room', data.roomId, email);
+                }
+
+                props.closeModal();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+            // socket.emit('join-room', roomId, email);
         };
 
         return (
@@ -58,32 +100,34 @@ function CreateGroup(props) {
                 >
                     <h2>Create Group</h2>
                     <form className='create-group-form' action="http://localhost:8080/group" method="post">
-                        <label htmlFor="topic">Topic:</label>
-                        <input type='text' name='topic' onChange={e=>setEmail(e.target.value)} placeholder='Any topic' />
-
-                        <label htmlFor="maxPeople">Maximum People:</label>
-                        <select name="maxPeople">
-                            <option value="Unlimited">Unlimited</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                        </select>
+                        <label htmlFor="topicName">Topic:</label>
+                        <input type='text' name='topicName' placeholder='Any topic' onChange={e=>setTopicName(e.target.value)}/>
+                        <input typee='text' name='creatorId' onChange={e=>{setEmail(e.target.value);setCreatorId(e.target.value)}}  />
+                        <label htmlFor="limit">Maximum People:</label>
+          
                         
                         <label htmlFor="languages">Language:</label>
-                        <select name="languages" onChange={e=>setRoomId(e.target.value)}>
-                            <option value="english">English</option>
-                            <option value="spanish">Spanish</option>
-                            <option value="french">French</option>
-                            <option value="german">German</option>
+                        <select name="languages" onChange={e=>setLanguage(e.target.value)}>
+                            <option value="ENGLISH">English</option>
+                            <option value="HINDI">Hindi</option>
+                            <option value="TELUGU">Telugu</option>
                         </select>
 
                         <label htmlFor="level">Level:</label>
-                        <select name="level">
-                            <option value="ANY_LEVEL">Any level</option>
+                        <select name="level" onChange={e=>setLevel(e.target.value)}>
+                            <option value="ANY_LEVEL" selected>Any level</option>
                             <option value="BEGINNER">Beginner</option>
                             <option value="INTERMEDIATE">Intermediate</option>
                             <option value="ADVANCED">Advanced</option>
                         </select>
+
+                        <select name="limit" onChange={e=>setLimit(e.target.value)}>
+                            <option value="1">1</option>
+                            <option value="2" selected>2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+
                         <button onClick={props.closeModal} type="button">Cancel</button>
                         <button type="submit" onClick={(e)=>{handleJoinRoom(e)}}>Create Group</button>
                     </form>
