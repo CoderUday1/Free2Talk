@@ -102,17 +102,18 @@ function CreateGroup(props) {
                     <form className='create-group-form' action="http://localhost:8080/group" method="post">
                         <label htmlFor="topicName">Topic:</label>
                         <input type='text' name='topicName' placeholder='Any topic' onChange={e=>setTopicName(e.target.value)}/>
-                        <input typee='text' name='creatorId' onChange={e=>{setEmail(e.target.value);setCreatorId(e.target.value)}}  />
-                        <label htmlFor="limit">Maximum People:</label>
-          
                         
+                        <br/>
+                        <input hidden="true" typee='int' name='creatorId' onChange={e=>{setEmail(e.target.value);setCreatorId(e.target.value)}}  />
+          
+                        <br/>
                         <label htmlFor="languages">Language:</label>
                         <select name="languages" onChange={e=>setLanguage(e.target.value)}>
                             <option value="ENGLISH">English</option>
                             <option value="HINDI">Hindi</option>
                             <option value="TELUGU">Telugu</option>
                         </select>
-
+                        <br/>
                         <label htmlFor="level">Level:</label>
                         <select name="level" onChange={e=>setLevel(e.target.value)}>
                             <option value="ANY_LEVEL" selected>Any level</option>
@@ -120,14 +121,15 @@ function CreateGroup(props) {
                             <option value="INTERMEDIATE">Intermediate</option>
                             <option value="ADVANCED">Advanced</option>
                         </select>
-
+                        <br/>
+                        <label htmlFor="limit">Maximum People:</label>
                         <select name="limit" onChange={e=>setLimit(e.target.value)}>
                             <option value="1">1</option>
                             <option value="2" selected>2</option>
                             <option value="3">3</option>
                             <option value="4">4</option>
                         </select>
-
+                        <br/>
                         <button onClick={props.closeModal} type="button">Cancel</button>
                         <button type="submit" onClick={(e)=>{handleJoinRoom(e)}}>Create Group</button>
                     </form>
